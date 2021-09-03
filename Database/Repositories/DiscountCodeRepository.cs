@@ -44,6 +44,22 @@ namespace Database.Repositories
 				RemoveByCode(code);
 		}
 
+		public bool TryUseCode(string code)
+		{
+			var dbObject = TryGetByCode(code);
+
+			if (dbObject != null && !dbObject.UsedAt.HasValue)
+			{
+				dbObject.UsedAt = DateTime.Now;
+
+				_context.SaveChanges();
+
+				return true;
+			}
+
+			return false;
+		}
+
 		internal void Create(DiscountCode dbObject)
 		{
 			dbObject.CreatedAt = DateTime.Now;
@@ -64,20 +80,7 @@ namespace Database.Repositories
 		{
 			return _context.DiscountCodes.FirstOrDefault(p => p.Code == code);
 		}
-		internal bool TryUseCode(string code)
-		{
-			var dbObject = TryGetByCode(code);
 
-			if (dbObject != null && !dbObject.UsedAt.HasValue)
-			{
-				dbObject.UsedAt = DateTime.Now;
-
-				_context.SaveChanges();
-
-				return true;
-			}
-
-			return false;
-		}
+		
 	}
 }
